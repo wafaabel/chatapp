@@ -4,3 +4,4 @@
 build/
 out
 service-account.json
+.env
