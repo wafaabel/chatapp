@@ -17,11 +17,11 @@ public class Main extends Application {
     public Main() throws IOException {
 
         FileInputStream serviceAccount =
-                new FileInputStream("C:\\Users\\user\\Downloads\\chat-12571-firebase-adminsdk-elyzu-d389365f9a.json");
+                new FileInputStream(System.getenv("GOOGLE_SERVICE_ACCOUNT"));
 
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .setDatabaseUrl("https://chat-12571-default-rtdb.firebaseio.com")
+                .setDatabaseUrl(System.getenv("GOOGLE_FIREBASE_URL"))
                 .build();
 
         app = FirebaseApp.initializeApp(options);
