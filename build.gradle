@@ -1,4 +1,5 @@
 plugins {
+    id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.9'
 }
@@ -8,16 +9,46 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
-    implementation group: 'org.slf4j', name:'slf4j-log4j12', version:'1.7.25'
-    implementation 'com.google.firebase:firebase-admin:7.1.0'
+    implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.25'
+    implementation 'com.google.firebase:firebase-admin:6.13.0'
+    compile 'io.github.cdimascio:dotenv-java:2.2.0'
 }
 
 javafx {
     version = "15"
-    modules = [ 'javafx.controls','javafx.fxml' ]
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
-mainClassName = 'Main'
+mainClassName = 'HelloFX'
+
+jar {
+    manifest {
+        attributes 'Main-Class':"HelloFX"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+
+task fatJar(type: Jar) {
+    manifest.from jar.manifest
+    classifier = 'all'
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
+}
+artifacts {
+    archives fatJar
+}
+

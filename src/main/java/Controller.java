@@ -7,6 +7,13 @@ import java.net.URL;
 import java.util.*;
 
 public class Controller implements Initializable {
+    final ArrayList<Message> messages;
+    final FirebaseDatabase database;
+
+    public Controller() {
+        database = FirebaseDatabase.getInstance();
+        messages = new ArrayList<>();
+    }
 
     @FXML
     private Button button1;
@@ -16,37 +23,12 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("initialisation ....");
 
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("messages/mohamed-wafaa");
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-
-                ArrayList<Message> messages = new ArrayList<>();
-
-                for( DataSnapshot data : snapshot.child("messages").getChildren()) {
-                    System.out.println(data.getValue());
-                    Message message = data.getValue(Message.class);
-                    messages.add(message);
-                }
-
-                messages.forEach(message -> {
-                    System.out.println(message.sender + " : " + message.msg + "\n");
-                });
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                System.out.println("The read failed: " + error.getCode());
-            }
-        });
+        DatabaseReference ref = database.getReference("messages/mohamed-wafaa/messages");
 
         ref.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
-
+                System.out.println(snapshot.getValue(Message.class));
             }
 
             @Override
@@ -72,20 +54,18 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void handleBtn1(){
+    public void handleBtn1() {
         System.out.println("btn clicked");
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("messages");
+        DatabaseReference ref = database.getReference("users");
 
-        Message message = new Message("hi", "mohamed");
-        ArrayList<Message> messages =  new ArrayList<>();
+        Map<String, User> users = new HashMap<>();
+        users.put("alanisawesome", new User("June 23, 1912", "Alan Turing"));
+        users.put("gracehop", new User("December 9, 1906", "Grace Hopper"));
 
-        messages.add(message);
+        ref.setValueAsync(users);
 
-        Conversation conversation = new Conversation(messages);
-
-        ref.child("mohamed-wafaa").setValueAsync(conversation);
     }
 
 
